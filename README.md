@@ -15,10 +15,10 @@ engineering can talk about the same opportunity.
 | Step | Screen | What is filled in |
 | --- | --- | --- |
 | 1 | Client details | Company, client type, contact person, position, mobile, e-mail |
-| 2 | Project details | Project name, location, emirate, stage, our scope, **offer deadline**, expected start, estimated value, competition |
+| 2 | Project details | Project name, city/district, **region** (all 13 regions of the Kingdom), stage, our scope, **offer deadline**, expected start, estimated value (SAR), competition |
 | 3 | Opportunity overview | Priority, chance of winning, high level description, client conditions |
 | 4 | Our products | STP, Greywater, RO, Stormwater, Landscape, Vacuum sewer (multi-select) |
-| 5 | Technical information | The questions for each selected product (flow, technology, water quality, …) |
+| 5 | Technical information | The questions for each selected product (flow, technology, water quality, approving authority such as MEWA, NWC, Royal Commission or Aramco, …) |
 | 6 | Attachments | Camera photo, drawings, tender documents, water analysis |
 | 7 | Review & send | Sales rep details, who receives it, message, full summary, **Send to engineer** |
 
@@ -45,7 +45,7 @@ A branded HTML e-mail with the reference, priority, offer deadline, the product
 tags, every answer grouped by section, the sales rep's note, and the client's
 files attached. Replying to it replies to the sales representative.
 
-Subject line: `[URGENT] [WSC-2026-0001] STP + Greywater - Dubai South Labour Village Ph.2 (Al Naboodah Contracting)`
+Subject line: `[URGENT] [WSC-2026-0001] STP + Greywater - Riyadh North Labour Village Ph.2 (Nesma & Partners)`
 
 ## Running it
 
@@ -65,7 +65,7 @@ e-mail is written to `data/outbox/` so it can be checked or forwarded by hand.
 | `PORT` | Port to listen on (default 3000) |
 | `SMTP_HOST` / `SMTP_PORT` / `SMTP_SECURE` | Mail server. Office 365: `smtp.office365.com`, `587`, `false` |
 | `SMTP_USER` / `SMTP_PASS` | Mailbox the app sends from |
-| `MAIL_FROM` | From header, e.g. `"Water Secret Sales App <sales-app@watersecret.ae>"` |
+| `MAIL_FROM` | From header, e.g. `"Water Secret Sales App <sales-app@watersecret.com.sa>"` |
 | `MAIL_REPLY_TO_SALES` | Replies go back to the sales rep (default true) |
 | `MAIL_CC_SALES` | Copy the sales rep on every registration (default true) |
 | `TEAM_ACCESS_CODE` | Optional shared code, needed if the app is published on the internet |
@@ -78,7 +78,7 @@ Edit `config/recipients.json` — it is read on every request, so no restart is
 needed:
 
 ```json
-{ "name": "STP & Greywater Engineer", "email": "stp.engineer@watersecret.ae", "products": ["stp", "greywater"] }
+{ "name": "STP & Greywater Engineer", "email": "stp.engineer@watersecret.com.sa", "products": ["stp", "greywater"] }
 ```
 
 * `default: true` — always pre-selected.

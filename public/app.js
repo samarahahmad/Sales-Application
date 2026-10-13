@@ -386,7 +386,7 @@
     recipientCard.append(chips,
       h('div', { class: 'field', style: 'margin-top:14px' },
         h('label', { class: 'field__label', for: 'extraEmail' }, 'Additional e-mail address'),
-        h('input', { type: 'email', id: 'extraEmail', placeholder: 'name@watersecret.ae', value: state.cc.join(', '), oninput: (e) => { state.cc = e.target.value.split(/[,;]/).map((s) => s.trim()).filter(Boolean); saveDraft(); } })),
+        h('input', { type: 'email', id: 'extraEmail', placeholder: 'name@watersecret.com.sa', value: state.cc.join(', '), oninput: (e) => { state.cc = e.target.value.split(/[,;]/).map((s) => s.trim()).filter(Boolean); saveDraft(); } })),
       h('div', { class: 'field' },
         h('label', { class: 'field__label', for: 'message' }, 'Message to the engineering team'),
         h('textarea', { id: 'message', rows: 3, placeholder: 'Anything the engineer should know before preparing the offer', oninput: (e) => { state.message = e.target.value; saveDraft(); } }, state.message)));

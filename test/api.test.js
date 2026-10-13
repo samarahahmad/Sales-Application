@@ -20,19 +20,20 @@ test.after(() => server.close());
 function fullPayload(overrides = {}) {
   return {
     details: {
-      clientCompany: 'Al Naboodah Contracting',
+      clientCompany: 'Nesma & Partners',
       clientType: 'Main contractor',
-      contactName: 'Khalid Rahman',
-      contactPhone: '+971 50 123 4567',
-      contactEmail: 'khalid@naboodah.ae',
-      projectName: 'Dubai South Labour Village Ph.2',
-      projectLocation: 'Dubai South',
+      contactName: 'Khalid Al Harbi',
+      contactPhone: '+966 50 123 4567',
+      contactEmail: 'khalid@nesma.com.sa',
+      projectName: 'Riyadh North Labour Village Ph.2',
+      projectLocation: 'Riyadh - Al Kharj Road',
       projectStage: 'Tender',
       submissionDeadline: '2026-10-15',
+      region: 'Riyadh',
       priority: 'High - urgent',
       summary: 'Client needs a 500 m3/day STP plus greywater reuse for landscape.',
       salesName: 'Samarah Ahmad',
-      salesEmail: 'samarah@watersecret.ae',
+      salesEmail: 'samarah@watersecret.com.sa',
       visitDate: '2026-09-02',
     },
     products: ['stp', 'greywater'],
@@ -40,7 +41,7 @@ function fullPayload(overrides = {}) {
       stp: { designFlow: 500, influentSource: 'Labour accommodation', technology: 'MBBR', odourControl: true },
       greywater: { designFlow: 120, greywaterSources: ['Showers / bath', 'Laundry'], reuseApplication: ['Landscape irrigation'] },
     },
-    recipients: ['engineering@watersecret.ae'],
+    recipients: ['engineering@watersecret.com.sa'],
     message: 'Client wants a budgetary offer before Thursday.',
     ...overrides,
   };
@@ -60,6 +61,7 @@ test('validation reports every missing required field', () => {
   const fields = result.errors.map((e) => e.field);
   assert.ok(fields.includes('clientCompany'));
   assert.ok(fields.includes('submissionDeadline'));
+  assert.ok(fields.includes('region'));
   assert.ok(fields.includes('products'));
 });
 
@@ -79,6 +81,7 @@ test('the e-mail carries the reference, the products and the technical answers',
   assert.match(subjectFor(record), /^\[URGENT\] \[WSC-2026-0001\] STP \+ Greywater/);
   const text = buildText(record);
   assert.match(text, /Design flow \(m³\/day\): 500/);
+  assert.match(text, /Region: Riyadh/);
   assert.match(text, /Odour control required: Yes/);
   const html = buildHtml(record);
   assert.match(html, /Sewage Treatment Plant/);
@@ -106,7 +109,7 @@ test('an opportunity with an attachment is stored, listed and e-mailed', async (
   // No SMTP in the test environment: the message is written to the outbox and
   // the phone is handed a mailto fallback.
   assert.strictEqual(body.emailStatus, 'not_configured');
-  assert.ok(body.fallback.body.includes('Al Naboodah Contracting'));
+  assert.ok(body.fallback.body.includes('Nesma & Partners'));
 
   const record = JSON.parse(fs.readFileSync(path.join(dataDir, 'opportunities', `${body.reference}.json`), 'utf8'));
   assert.strictEqual(record.attachments.length, 1);
@@ -115,7 +118,7 @@ test('an opportunity with an attachment is stored, listed and e-mailed', async (
   assert.ok(fs.existsSync(path.join(dataDir, 'outbox', `${body.reference}.html`)));
 
   const list = await (await fetch(`${base()}/api/opportunities`)).json();
-  assert.ok(list.opportunities.some((o) => o.reference === body.reference && o.projectName === 'Dubai South Labour Village Ph.2'));
+  assert.ok(list.opportunities.some((o) => o.reference === body.reference && o.projectName === 'Riyadh North Labour Village Ph.2'));
 });
 
 test('the same submission sent twice registers only one opportunity', async () => {

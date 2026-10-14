@@ -1,0 +1,1246 @@
+<title>Water Secret Sales</title>
+<style>
+/* Water Secret Contracting - sales app
+   Mobile first: everything is sized for one hand on a phone in the sun. */
+
+:root {
+  --brand: #0f5c8c;
+  --brand-dark: #0b4467;
+  --brand-light: #e7f1f8;
+  --accent: #12a3a0;
+  --ink: #12232e;
+  --muted: #5a6b76;
+  --line: #dbe4ea;
+  --bg: #eef2f5;
+  --surface: #ffffff;
+  --danger: #c0392b;
+  --warn: #c98a12;
+  --ok: #1e8e5a;
+  --radius: 14px;
+  --shadow: 0 2px 10px rgba(15, 92, 140, .1);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  padding-bottom: calc(84px + var(--safe-bottom));
+}
+
+/* ---------- app bar ---------- */
+.app-bar {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; gap: 6px;
+  padding: calc(10px + var(--safe-top)) 10px 10px;
+  background: var(--brand); color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .16);
+}
+.app-bar__title { flex: 1; min-width: 0; text-align: center; }
+.app-bar__company { display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: #a9d3ea; }
+.app-bar__screen { display: block; font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.app-bar__back, .app-bar__action {
+  width: 40px; height: 40px; border: 0; border-radius: 50%;
+  background: rgba(255, 255, 255, .12); color: #fff; display: grid; place-items: center; cursor: pointer;
+}
+.app-bar__back[hidden] { visibility: hidden; display: grid; }
+
+/* ---------- progress ---------- */
+.progress { position: sticky; top: calc(60px + var(--safe-top)); z-index: 15; background: var(--surface); padding: 8px 14px 10px; border-bottom: 1px solid var(--line); }
+.progress__bar { height: 5px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.progress__fill { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--brand), var(--accent)); transition: width .25s ease; }
+.progress__label { margin-top: 6px; font-size: 12px; color: var(--muted); font-weight: 600; letter-spacing: .02em; }
+
+.offline-banner { background: #fff3cd; color: #7a5b06; font-size: 13px; padding: 8px 14px; text-align: center; border-bottom: 1px solid #f0e0a8; }
+
+/* ---------- layout ---------- */
+.main { padding: 14px 14px 8px; max-width: 720px; margin: 0 auto; }
+.step-title { margin: 4px 0 2px; font-size: 20px; font-weight: 700; }
+.step-hint { margin: 0 0 14px; color: var(--muted); font-size: 14px; }
+
+.card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 14px; margin-bottom: 14px; }
+.card__title { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; font-size: 15px; font-weight: 700; color: var(--brand); text-transform: uppercase; letter-spacing: .05em; }
+
+/* ---------- fields ---------- */
+.field { margin-bottom: 14px; }
+.field:last-child { margin-bottom: 4px; }
+.field__label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+.field__req { color: var(--danger); }
+.field__hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.field__error { font-size: 13px; color: var(--danger); margin-top: 5px; font-weight: 600; display: none; }
+.field.is-invalid .field__error { display: block; }
+.field.is-invalid input, .field.is-invalid select, .field.is-invalid textarea { border-color: var(--danger); background: #fdf3f2; }
+
+input[type=text], input[type=tel], input[type=email], input[type=number], input[type=date], select, textarea {
+  width: 100%; padding: 13px 12px; font-size: 16px; font-family: inherit; color: var(--ink);
+  background: #fbfdfe; border: 1.5px solid var(--line); border-radius: 10px; appearance: none;
+}
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(15, 92, 140, .12); }
+textarea { resize: vertical; min-height: 84px; line-height: 1.45; }
+select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235a6b76' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 20px; padding-right: 38px; }
+
+/* chips for multi select */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { border: 1.5px solid var(--line); background: #fbfdfe; border-radius: 20px; padding: 9px 14px; font-size: 14px; font-weight: 500; color: var(--muted); cursor: pointer; }
+.chip[aria-pressed=true] { background: var(--brand-light); border-color: var(--brand); color: var(--brand-dark); font-weight: 600; }
+
+/* switch for checkbox */
+.switch { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 0; }
+.switch__label { font-size: 14px; font-weight: 600; }
+.switch__box { flex: none; width: 50px; height: 30px; border-radius: 15px; background: var(--line); border: 0; position: relative; cursor: pointer; transition: background .2s; }
+.switch__box::after { content: ""; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .3); transition: transform .2s; }
+.switch__box[aria-checked=true] { background: var(--accent); }
+.switch__box[aria-checked=true]::after { transform: translateX(20px); }
+
+/* ---------- product cards ---------- */
+.product-list { display: grid; gap: 12px; }
+.product {
+  display: flex; gap: 12px; align-items: flex-start; text-align: left; width: 100%;
+  background: var(--surface); border: 2px solid transparent; border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 14px; cursor: pointer; font: inherit; color: inherit;
+}
+.product[aria-pressed=true] { border-color: var(--accent); background: #f2fbfb; }
+.product__icon { flex: none; width: 46px; height: 46px; border-radius: 12px; background: var(--brand-light); color: var(--brand); display: grid; place-items: center; }
+.product[aria-pressed=true] .product__icon { background: var(--accent); color: #fff; }
+.product__body { flex: 1; min-width: 0; }
+.product__name { display: block; font-weight: 700; font-size: 15px; line-height: 1.3; }
+.product__desc { display: block; font-size: 13px; line-height: 1.35; color: var(--muted); margin-top: 3px; }
+.product__check { flex: none; width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; color: transparent; align-self: center; }
+.product[aria-pressed=true] .product__check { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* ---------- attachments ---------- */
+.dropzone { border: 2px dashed #b9cddb; border-radius: var(--radius); background: #f8fbfd; padding: 22px 14px; text-align: center; color: var(--muted); }
+.file-list { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 8px; }
+.file-item { display: flex; align-items: center; gap: 10px; background: #f5f8fa; border: 1px solid var(--line); border-radius: 10px; padding: 9px 10px; }
+.file-item__name { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.file-item__size { font-size: 12px; color: var(--muted); }
+.file-item__remove { border: 0; background: none; color: var(--danger); font-size: 22px; line-height: 1; cursor: pointer; padding: 0 4px; }
+.file-item__thumb { width: 38px; height: 38px; border-radius: 8px; object-fit: cover; flex: none; background: var(--line); }
+
+/* ---------- review ---------- */
+.review-group { margin-bottom: 16px; }
+.review-group__title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--brand); border-bottom: 2px solid var(--brand-light); padding-bottom: 5px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+.review-group__edit { border: 0; background: none; color: var(--accent); font-size: 12px; font-weight: 700; cursor: pointer; text-transform: none; letter-spacing: 0; }
+.review-row { display: flex; gap: 10px; padding: 5px 0; font-size: 14px; border-bottom: 1px solid #f0f4f7; }
+.review-row__label { color: var(--muted); flex: 0 0 45%; }
+.review-row__value { font-weight: 600; flex: 1; white-space: pre-wrap; word-break: break-word; }
+
+/* ---------- buttons ---------- */
+.nav-bar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+  display: flex; gap: 10px; padding: 12px 14px calc(12px + var(--safe-bottom));
+  background: rgba(255, 255, 255, .96); backdrop-filter: blur(8px); border-top: 1px solid var(--line);
+}
+.btn { flex: 1; padding: 15px 16px; border-radius: 12px; border: 0; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; }
+.btn--primary { background: var(--brand); color: #fff; }
+.btn--primary:disabled { background: #9db6c6; }
+.btn--send { background: var(--accent); color: #fff; }
+.btn--ghost { background: #eaf0f4; color: var(--brand-dark); flex: 0 0 34%; }
+.btn--block { width: 100%; margin-top: 10px; }
+.btn--outline { background: #fff; border: 1.5px solid var(--brand); color: var(--brand); }
+.btn--link { background: none; color: var(--brand); text-decoration: underline; font-weight: 600; }
+
+/* ---------- status screens ---------- */
+.result { text-align: center; padding: 26px 10px; }
+.result__icon { width: 78px; height: 78px; border-radius: 50%; display: grid; place-items: center; margin: 0 auto 16px; background: var(--ok); color: #fff; }
+.result__icon--warn { background: var(--warn); }
+.result__ref { font-size: 26px; font-weight: 800; color: var(--brand); letter-spacing: .02em; margin: 10px 0 4px; }
+.result__note { color: var(--muted); font-size: 14px; }
+
+.record { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 12px 14px; margin-bottom: 10px; }
+.record__top { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; color: var(--muted); }
+.record__ref { font-weight: 700; color: var(--brand); }
+.record__project { font-weight: 700; margin: 3px 0 1px; }
+.record__client { font-size: 13px; color: var(--muted); }
+.tag { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 10px; background: var(--brand-light); color: var(--brand-dark); margin: 6px 6px 0 0; }
+.tag--sent { background: #e3f6ec; color: var(--ok); }
+.tag--pending { background: #fdf1d8; color: var(--warn); }
+.tag--failed { background: #fbe6e4; color: var(--danger); }
+
+.empty { text-align: center; color: var(--muted); padding: 40px 20px; }
+.spinner { width: 26px; height: 26px; border: 3px solid rgba(255, 255, 255, .35); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; display: inline-block; vertical-align: middle; }
+.spinner--brand { border-color: rgba(15, 92, 140, .2); border-top-color: var(--brand); }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.toast { position: fixed; left: 50%; bottom: calc(96px + var(--safe-bottom)); transform: translateX(-50%); background: var(--ink); color: #fff; padding: 12px 18px; border-radius: 22px; font-size: 14px; font-weight: 600; z-index: 40; max-width: 90%; text-align: center; box-shadow: 0 4px 16px rgba(0, 0, 0, .3); }
+
+/* ---------- sheet ---------- */
+.sheet { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; }
+/* `display` beats the hidden attribute, so both flex layers need this back. */
+.sheet[hidden], .nav-bar[hidden] { display: none; }
+.sheet__backdrop { position: absolute; inset: 0; background: rgba(18, 35, 46, .5); }
+.sheet__panel { position: relative; width: 100%; max-height: 82vh; overflow-y: auto; background: var(--surface); border-radius: 18px 18px 0 0; padding: 16px 16px calc(20px + var(--safe-bottom)); }
+.sheet__header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.sheet__header h2 { font-size: 17px; margin: 0; }
+.sheet__close { border: 0; background: none; font-size: 30px; line-height: 1; color: var(--muted); cursor: pointer; }
+
+.summary-line { font-size: 13px; color: var(--muted); }
+.divider { height: 1px; background: var(--line); margin: 14px 0; }
+
+@media (min-width: 720px) {
+  .product-list { grid-template-columns: 1fr 1fr; }
+  .nav-bar { max-width: 720px; margin: 0 auto; border-radius: 14px 14px 0 0; }
+}
+
+
+/* Demo strip: this build has no server behind it, and must say so. */
+.demo-note {
+  display: flex; gap: 8px; align-items: baseline; justify-content: center; flex-wrap: wrap;
+  background: #0b4467; color: #cfe6f4; font-size: 12px; line-height: 1.45;
+  padding: 7px 14px; text-align: center;
+}
+.demo-note strong { color: #ffffff; letter-spacing: .06em; text-transform: uppercase; font-size: 11px; }
+</style>
+
+<header class="app-bar">
+  <button class="app-bar__back" id="backBtn" hidden aria-label="Back">
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <div class="app-bar__title">
+    <span class="app-bar__company">Water Secret Contracting</span>
+    <span class="app-bar__screen" id="screenTitle">Sales Opportunity</span>
+  </div>
+  <button class="app-bar__action" id="listBtn" aria-label="My registrations">
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+  </button>
+</header>
+
+<div class="progress" id="progress" hidden>
+  <div class="progress__bar"><span class="progress__fill" id="progressFill"></span></div>
+  <div class="progress__label" id="progressLabel"></div>
+</div>
+
+<div class="offline-banner" id="offlineBanner" hidden>You are offline &mdash; the opportunity will be sent automatically when you get signal.</div>
+
+<main id="main" class="main"></main>
+
+<footer class="nav-bar" id="navBar" hidden>
+  <button class="btn btn--ghost" id="prevBtn">Back</button>
+  <button class="btn btn--primary" id="nextBtn">Next</button>
+</footer>
+
+<div class="toast" id="toast" hidden></div>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="sheet__backdrop" data-close></div>
+  <div class="sheet__panel" role="dialog" aria-modal="true">
+    <div class="sheet__header"><h2 id="sheetTitle"></h2><button class="sheet__close" data-close aria-label="Close">&times;</button></div>
+    <div class="sheet__body" id="sheetBody"></div>
+  </div>
+</div>
+
+<script>
+/* ------------------------------------------------------------------
+   Stand-in for the server: keeps this preview working on its own.
+   The production app talks to the Express API in server/.
+   ------------------------------------------------------------------ */
+(() => {
+  const CATALOG = {"company":{"name":"Water Secret Contracting","shortName":"Water Secret","tagline":"Sales Opportunity Registration"},"sections":[{"id":"client","title":"Client details","icon":"building","fields":[{"name":"clientCompany","label":"Client / company name","type":"text","required":true,"placeholder":"e.g. Nesma & Partners"},{"name":"clientType","label":"Client type","type":"select","required":true,"options":["Main contractor","Sub contractor","Consultant","Developer","Facility management","Government / authority","End user / owner","Other"]},{"name":"contactName","label":"Contact person","type":"text","required":true},{"name":"contactPosition","label":"Position","type":"text","placeholder":"e.g. Procurement Manager"},{"name":"contactPhone","label":"Mobile number","type":"tel","required":true,"placeholder":"+966 5X XXX XXXX"},{"name":"contactEmail","label":"E-mail","type":"email","required":true}]},{"id":"project","title":"Project details","icon":"project","fields":[{"name":"projectName","label":"Project name","type":"text","required":true,"placeholder":"e.g. Riyadh North Labour Village Ph.2"},{"name":"projectLocation","label":"City / district","type":"text","required":true,"placeholder":"e.g. Jeddah - Obhur, Jubail Industrial City"},{"name":"region","label":"Region","type":"select","required":true,"hint":"The 13 regions of the Kingdom","options":["Riyadh","Makkah","Madinah","Qassim","Eastern Province","Asir","Tabuk","Hail","Northern Borders","Jazan","Najran","Al Bahah","Al Jouf","Other GCC","Outside GCC"]},{"name":"projectStage","label":"Project stage","type":"select","required":true,"options":["Concept / feasibility","Design","Tender","Awarded - procurement","Under construction","Existing facility / retrofit"]},{"name":"scopeType","label":"Scope required from us","type":"multiselect","options":["Supply only","Supply & installation","Design & build","O & M / service","Spare parts","Consultancy / study"]},{"name":"submissionDeadline","label":"Offer / submission deadline","type":"date","required":true,"hint":"Date the client needs our proposal"},{"name":"projectStartDate","label":"Expected project start","type":"date"},{"name":"estimatedValue","label":"Estimated value (SAR)","type":"number","placeholder":"Budget indication if known"},{"name":"competition","label":"Competition / other bidders","type":"text"}]},{"id":"opportunity","title":"Opportunity overview","icon":"chart","fields":[{"name":"priority","label":"Priority","type":"select","required":true,"options":["High - urgent","Medium","Low"],"default":"Medium"},{"name":"winProbability","label":"Chance of winning","type":"select","options":["Hot (>70%)","Warm (30-70%)","Cold (<30%)"]},{"name":"summary","label":"High level information about the opportunity","type":"textarea","required":true,"rows":5,"placeholder":"What did the client ask for, site conditions, decision maker, next steps..."},{"name":"clientRequirements","label":"Specific client requests / conditions","type":"textarea","rows":3}]}],"products":[{"id":"stp","name":"Sewage Treatment Plant (STP)","short":"STP","icon":"stp","description":"Packaged & civil STP - MBBR, MBR, SBR, extended aeration","fields":[{"name":"designFlow","label":"Design flow (m³/day)","type":"number","required":true},{"name":"populationEquivalent","label":"Population equivalent (persons)","type":"number"},{"name":"influentSource","label":"Type of sewage","type":"select","required":true,"options":["Domestic / residential","Labour accommodation","Commercial / offices","Hotel / resort","Industrial","Mixed"]},{"name":"technology","label":"Preferred technology","type":"select","options":["MBBR","MBR","SBR","Extended aeration","Packaged plant","Client open to our proposal"]},{"name":"installationType","label":"Installation type","type":"select","options":["Underground concrete (civil)","Above ground GRP","Above ground steel","Containerised","Modular / skid"]},{"name":"effluentQuality","label":"Required treated water quality","type":"text","placeholder":"e.g. BOD < 10, TSS < 10, FC nil"},{"name":"treatedWaterUse","label":"Treated water will be used for","type":"multiselect","options":["Landscape irrigation","Toilet flushing","Cooling towers","Discharge to municipal sewer","Tankered off site","Not decided"]},{"name":"sludgeHandling","label":"Sludge handling","type":"select","options":["Sludge holding tank only","Filter press","Belt press / decanter","Drying beds","Tanker removal","Not decided"]},{"name":"authority","label":"Approving authority","type":"select","options":["Ministry of Environment, Water & Agriculture (MEWA)","National Water Company (NWC)","Saudi Water Authority","Municipality / Amanah (MOMRAH)","Royal Commission (Jubail & Yanbu)","Giga-project authority (NEOM, Qiddiya, Diriyah, Red Sea)","Saudi Aramco","MODON - industrial cities","Other","Not known"]},{"name":"scopeOfWork","label":"Existing or new plant","type":"select","options":["New plant","Upgrade of existing","Retrofit / rehabilitation","Replacement"]},{"name":"odourControl","label":"Odour control required","type":"checkbox"},{"name":"notes","label":"Other technical information from the client","type":"textarea","rows":4}]},{"id":"greywater","name":"Greywater Treatment & Recycling","short":"Greywater","icon":"greywater","description":"Greywater recycling for irrigation, flushing & cooling make-up","fields":[{"name":"designFlow","label":"Design flow (m³/day)","type":"number","required":true},{"name":"greywaterSources","label":"Greywater sources","type":"multiselect","required":true,"options":["Showers / bath","Wash basins","Laundry","Kitchen","AC condensate","Swimming pool backwash"]},{"name":"reuseApplication","label":"Reuse application","type":"multiselect","required":true,"options":["Landscape irrigation","Toilet flushing","Water features","Cooling tower make-up","Car / floor washing"]},{"name":"technology","label":"Preferred technology","type":"select","options":["MBR","Ultrafiltration","MBBR + UF","Sand filter + UV","Client open to our proposal"]},{"name":"buildingType","label":"Building type","type":"select","options":["Villa","Villa compound","Apartment building","Hotel","Labour accommodation","Mall / commercial","School / institution","Other"]},{"name":"storageCapacity","label":"Treated water storage required (m³)","type":"number"},{"name":"disinfection","label":"Disinfection","type":"select","options":["UV","Chlorination","UV + chlorination","Not decided"]},{"name":"plantRoom","label":"Plant room / space available","type":"select","options":["Yes - dedicated room","Yes - shared space","Underground tank only","To be confirmed"]},{"name":"greenBuilding","label":"Green building requirement","type":"select","options":["LEED","Mostadam","None","Not known"]},{"name":"notes","label":"Other technical information from the client","type":"textarea","rows":4}]},{"id":"ro","name":"Reverse Osmosis / Desalination","short":"RO","icon":"ro","description":"SWRO, BWRO, process water & polishing plants","fields":[{"name":"productFlow","label":"Required product water (m³/day)","type":"number","required":true},{"name":"feedSource","label":"Feed water source","type":"select","required":true,"options":["Seawater","Brackish well water","Municipal / potable","TSE / treated effluent","Process water","Not known"]},{"name":"feedTds","label":"Feed water TDS (ppm)","type":"number","hint":"From the client water analysis if available"},{"name":"productTds","label":"Required product TDS (ppm)","type":"number"},{"name":"application","label":"Application","type":"select","required":true,"options":["Potable water","Boiler feed","Process water","Irrigation","Bottling / beverage","Cooling tower make-up","Laboratory / medical"]},{"name":"preTreatment","label":"Pre-treatment required","type":"select","options":["Yes - to be designed by us","Existing at site","Not required","To be confirmed"]},{"name":"recovery","label":"Target recovery (%)","type":"number"},{"name":"brineDisposal","label":"Brine / reject disposal","type":"select","options":["Sea outfall","Soakaway","Municipal sewer","Evaporation pond","Tanker removal","Not decided"]},{"name":"plantType","label":"Plant arrangement","type":"select","options":["Skid mounted","Containerised","Plant room installation","Mobile / trailer"]},{"name":"powerSupply","label":"Power available at site","type":"select","options":["415V / 3 phase","230V / single phase","Generator","Solar / hybrid","Not available yet"]},{"name":"waterAnalysis","label":"Water analysis provided by client","type":"checkbox","hint":"Attach it in the next step"},{"name":"notes","label":"Other technical information from the client","type":"textarea","rows":4}]},{"id":"stormwater","name":"Stormwater Management","short":"Stormwater","icon":"stormwater","description":"Attenuation, soakaways, pump stations & drainage networks","fields":[{"name":"catchmentArea","label":"Catchment area (m²)","type":"number","required":true},{"name":"systemType","label":"System required","type":"multiselect","required":true,"options":["Attenuation tank","Infiltration / soakaway","Stormwater pump station","Channel drainage","Gully & pipe network","Rainwater harvesting","Oil / water separator"]},{"name":"peakFlow","label":"Peak flow (l/s)","type":"number"},{"name":"rainfallIntensity","label":"Design rainfall intensity","type":"text","placeholder":"e.g. 80 mm/hr - 25 year return"},{"name":"dischargePoint","label":"Discharge point","type":"select","options":["Municipal storm network","Sea / creek outfall","Soakaway / ground","Reuse / irrigation tank","Not decided"]},{"name":"groundConditions","label":"Ground conditions","type":"select","options":["Sandy - good infiltration","Rocky","High water table","Coastal / saline","Not known"]},{"name":"waterTableDepth","label":"Water table depth (m)","type":"number"},{"name":"storageVolume","label":"Required storage volume (m³)","type":"number"},{"name":"drawingsAvailable","label":"Site / drainage drawings available","type":"checkbox","hint":"Attach them in the next step"},{"name":"notes","label":"Other technical information from the client","type":"textarea","rows":4}]},{"id":"landscape","name":"Landscape & Irrigation","short":"Landscape","icon":"landscape","description":"Softscape, hardscape, irrigation networks & water features","fields":[{"name":"landscapeArea","label":"Landscape area (m²)","type":"number","required":true},{"name":"scope","label":"Scope","type":"multiselect","required":true,"options":["Softscape / planting","Hardscape","Irrigation network","Water features / fountains","Swimming pool","Green wall","Turf / lawn","Trees & palms","Maintenance contract"]},{"name":"irrigationType","label":"Irrigation type","type":"multiselect","options":["Drip","Pop-up sprinkler","Bubbler","Subsurface","Manual / hose"]},{"name":"waterSource","label":"Irrigation water source","type":"select","options":["TSE / treated sewage effluent","Treated greywater","Potable","Well water","Tanker supply","Not decided"]},{"name":"waterDemand","label":"Estimated water demand (m³/day)","type":"number"},{"name":"controlSystem","label":"Irrigation control","type":"select","options":["Standard controller","Smart / central control","Weather based","Manual","Not decided"]},{"name":"pumpRoom","label":"Irrigation pump room","type":"select","options":["Existing","New - in our scope","By others","To be confirmed"]},{"name":"siteVisitDone","label":"Site survey completed","type":"checkbox"},{"name":"notes","label":"Other technical information from the client","type":"textarea","rows":4}]},{"id":"vacuum","name":"Vacuum Sewer System","short":"Vacuum sewer","icon":"vacuum","description":"Vacuum stations, collection chambers, valves & networks","fields":[{"name":"connections","label":"Number of connections","type":"number","required":true},{"name":"servedPopulation","label":"Population served","type":"number"},{"name":"peakFlow","label":"Peak flow (m³/hr)","type":"number"},{"name":"networkLength","label":"Approximate network length (m)","type":"number"},{"name":"terrain","label":"Site / terrain conditions","type":"select","options":["Flat","Rolling / undulating","High water table","Rocky","Coastal","Dense built-up area"]},{"name":"applicationType","label":"Application","type":"select","options":["Residential community","Labour accommodation","Resort / hotel","Industrial area","Island / coastal development","Marina","Camp site"]},{"name":"stationType","label":"Vacuum station type","type":"select","options":["Prefabricated / packaged","Concrete built","Containerised","Not decided"]},{"name":"dischargePoint","label":"Discharge to","type":"text","placeholder":"e.g. existing STP / municipal main"},{"name":"valvePits","label":"Number of valve pits (if known)","type":"number"},{"name":"notes","label":"Other technical information from the client","type":"textarea","rows":4}]}],"submission":{"id":"submission","title":"Sales representative","fields":[{"name":"salesName","label":"Your name","type":"text","required":true,"remember":true},{"name":"salesEmail","label":"Your e-mail","type":"email","required":true,"remember":true},{"name":"salesPhone","label":"Your mobile","type":"tel","remember":true},{"name":"visitDate","label":"Date of client visit","type":"date","required":true},{"name":"nextAction","label":"Next action / follow up","type":"textarea","rows":3,"placeholder":"e.g. send budgetary offer by Thursday, technical meeting next week"}]},"recipients":[{"name":"Engineering Department","email":"engineering@watersecret.com.sa","default":true,"products":[]},{"name":"Proposals / Estimation","email":"proposals@watersecret.com.sa","default":true,"products":[]},{"name":"STP & Greywater Engineer","email":"stp.engineer@watersecret.com.sa","products":["stp","greywater"]},{"name":"RO & Water Treatment Engineer","email":"ro.engineer@watersecret.com.sa","products":["ro"]},{"name":"Infrastructure Engineer","email":"infra.engineer@watersecret.com.sa","products":["stormwater","vacuum"]},{"name":"Landscape Engineer","email":"landscape@watersecret.com.sa","products":["landscape"]},{"name":"Sales Manager","email":"sales.manager@watersecret.com.sa"}],"mailConfigured":false,"accessCodeRequired":false,"limits":{"maxUploadMb":15,"maxFiles":10}};
+  const KEY = 'wsc.demo.records.v1';
+  const realFetch = window.fetch.bind(window);
+
+  const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; } };
+  const save = (records) => { try { localStorage.setItem(KEY, JSON.stringify(records)); } catch { /* private mode */ } };
+  const reply = (body, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
+
+  function reference(records) {
+    const year = new Date().getFullYear();
+    const used = records.filter((r) => r.reference.startsWith('WSC-' + year)).length;
+    return 'WSC-' + year + '-' + String(used + 1).padStart(4, '0');
+  }
+
+  function summary(payload) {
+    const lines = [CATALOG.company.name + ' - new sales opportunity', ''];
+    const show = (field, value) => {
+      if (value === true) return 'Yes';
+      if (value === false) return 'No';
+      if (Array.isArray(value)) return value.join(', ');
+      return String(value);
+    };
+    for (const section of [...CATALOG.sections, CATALOG.submission]) {
+      const rows = section.fields.filter((f) => payload.details[f.name] !== undefined && payload.details[f.name] !== '');
+      if (!rows.length) continue;
+      lines.push('== ' + section.title + ' ==');
+      for (const f of rows) lines.push('  ' + f.label + ': ' + show(f, payload.details[f.name]));
+      lines.push('');
+    }
+    for (const id of payload.products) {
+      const product = CATALOG.products.find((p) => p.id === id);
+      const values = payload.productDetails[id] || {};
+      lines.push('== ' + product.name + ' ==');
+      for (const f of product.fields) {
+        if (values[f.name] === undefined || values[f.name] === '') continue;
+        lines.push('  ' + f.label + ': ' + show(f, values[f.name]));
+      }
+      lines.push('');
+    }
+    if (payload.message) lines.push('== Message ==', '  ' + payload.message);
+    return lines.join('\n');
+  }
+
+  window.fetch = async (input, init = {}) => {
+    const url = String(typeof input === 'string' ? input : input.url || '');
+    const method = String(init.method || 'GET').toUpperCase();
+
+    if (url.includes('api/catalog')) return reply(CATALOG);
+
+    if (url.includes('api/opportunities') && url.includes('/resend')) {
+      return reply({ emailStatus: 'not_configured', error: 'This is the preview - connect the app to your mail server to send automatically.' });
+    }
+
+    if (url.includes('api/opportunities') && method === 'POST') {
+      const form = init.body;
+      const payload = JSON.parse(form.get('payload'));
+      const files = form.getAll ? form.getAll('attachments') : [];
+      const records = load();
+
+      const already = records.find((r) => payload.clientId && r.clientId === payload.clientId);
+      if (already) {
+        return reply({ reference: already.reference, emailStatus: 'not_configured', sentTo: already.recipients, duplicate: true,
+          message: 'This opportunity was already registered as ' + already.reference + '.' });
+      }
+
+      const record = {
+        reference: reference(records),
+        clientId: payload.clientId,
+        createdAt: new Date().toISOString(),
+        clientCompany: payload.details.clientCompany || '',
+        projectName: payload.details.projectName || '',
+        salesName: payload.details.salesName || '',
+        priority: payload.details.priority || '',
+        deadline: payload.details.submissionDeadline || '',
+        products: payload.products,
+        recipients: payload.recipients,
+        attachments: files.length,
+      };
+      records.unshift(record);
+      save(records);
+
+      return reply({
+        reference: record.reference,
+        emailStatus: 'not_configured',
+        sentTo: payload.recipients,
+        fallback: { subject: record.reference, body: summary(payload), to: payload.recipients },
+        message: 'Preview: the registration is saved on this device. Tap "Send from my mail app" to send the full summary to the engineer now.',
+      }, 201);
+    }
+
+    if (url.includes('api/opportunities')) {
+      return reply({ opportunities: load().map((r) => ({ ...r, emailStatus: 'not_sent' })) });
+    }
+
+    return realFetch(input, init);
+  };
+
+  const note = document.createElement('div');
+  note.className = 'demo-note';
+  note.innerHTML = '<strong>Preview</strong><span>Try the full form. Nothing is e-mailed automatically here &mdash; "Send" opens your own mail app.</span>';
+  document.getElementById('offlineBanner').insertAdjacentElement('afterend', note);
+})();
+</script>
+<script>/* Water Secret Contracting - sales opportunity registration.
+   Vanilla JS so the app installs on any phone with no build step. */
+
+(() => {
+  'use strict';
+
+  const API = {
+    catalog: 'api/catalog',
+    opportunities: 'api/opportunities',
+  };
+  const DRAFT_KEY = 'wsc.draft.v1';
+  const REP_KEY = 'wsc.rep.v1';
+  const CODE_KEY = 'wsc.code.v1';
+
+  /* ------------------------------------------------------------------ state */
+
+  let catalog = null;
+  let state = emptyState();
+  let stepIndex = 0;
+  let screen = 'wizard'; // wizard | result | list
+  let lastResult = null;
+  let submitting = false;
+
+  function emptyState() {
+    return { clientId: null, details: {}, products: [], productDetails: {}, recipients: [], cc: [], message: '', files: [] };
+  }
+
+  const el = {
+    main: document.getElementById('main'),
+    title: document.getElementById('screenTitle'),
+    back: document.getElementById('backBtn'),
+    list: document.getElementById('listBtn'),
+    navBar: document.getElementById('navBar'),
+    prev: document.getElementById('prevBtn'),
+    next: document.getElementById('nextBtn'),
+    progress: document.getElementById('progress'),
+    progressFill: document.getElementById('progressFill'),
+    progressLabel: document.getElementById('progressLabel'),
+    offline: document.getElementById('offlineBanner'),
+    toast: document.getElementById('toast'),
+    sheet: document.getElementById('sheet'),
+    sheetTitle: document.getElementById('sheetTitle'),
+    sheetBody: document.getElementById('sheetBody'),
+  };
+
+  const STEPS = [
+    { id: 'client', kind: 'section', section: 'client', title: 'Client details', hint: 'Who are you meeting today?' },
+    { id: 'project', kind: 'section', section: 'project', title: 'Project details', hint: 'What is the job and when do they need our offer?' },
+    { id: 'opportunity', kind: 'section', section: 'opportunity', title: 'Opportunity overview', hint: 'High level information for the engineering team.' },
+    { id: 'products', kind: 'products', title: 'Our products', hint: 'Select everything the client needs.' },
+    { id: 'technical', kind: 'technical', title: 'Technical information', hint: 'High level details given by the client.' },
+    { id: 'attachments', kind: 'attachments', title: 'Attachments', hint: 'Drawings, tender documents, site photos, water analysis.' },
+    { id: 'send', kind: 'send', title: 'Review & send', hint: 'Check the summary and send it to the engineer.' },
+  ];
+
+  /* ------------------------------------------------------------- small utils */
+
+  function h(tag, attrs = {}, ...children) {
+    const node = document.createElement(tag);
+    for (const [key, value] of Object.entries(attrs)) {
+      if (value === undefined || value === null || value === false) continue;
+      if (key === 'class') node.className = value;
+      else if (key === 'html') node.innerHTML = value;
+      else if (key.startsWith('on') && typeof value === 'function') node.addEventListener(key.slice(2), value);
+      else node.setAttribute(key, value === true ? '' : value);
+    }
+    for (const child of children.flat()) {
+      if (child === null || child === undefined || child === false) continue;
+      node.append(child instanceof Node ? child : document.createTextNode(String(child)));
+    }
+    return node;
+  }
+
+  function toast(message, ms = 2600) {
+    el.toast.textContent = message;
+    el.toast.hidden = false;
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => { el.toast.hidden = true; }, ms);
+  }
+
+  function openSheet(title, body) {
+    el.sheetTitle.textContent = title;
+    el.sheetBody.replaceChildren(body);
+    el.sheet.hidden = false;
+  }
+  function closeSheet() { el.sheet.hidden = true; }
+  el.sheet.addEventListener('click', (e) => { if (e.target.hasAttribute('data-close')) closeSheet(); });
+
+  function formatBytes(bytes) {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
+
+  function formatDate(value) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value || '')) return value || '';
+    const [y, m, d] = value.split('-');
+    return `${d}/${m}/${y}`;
+  }
+
+  function displayValue(field, value) {
+    if (value === true) return 'Yes';
+    if (value === false) return 'No';
+    if (Array.isArray(value)) return value.join(', ');
+    if (field && field.type === 'date') return formatDate(value);
+    if (field && field.type === 'number' && value !== '') return Number(value).toLocaleString('en-US');
+    return value === undefined || value === null ? '' : String(value);
+  }
+
+  function isBlank(value) {
+    return value === undefined || value === null || value === '' || (Array.isArray(value) && value.length === 0);
+  }
+
+  const ICONS = {
+    stp: 'M4 20h16V9l-8-5-8 5v11zM9 20v-5h6v5',
+    greywater: 'M12 3s6 6.4 6 10a6 6 0 11-12 0c0-3.6 6-10 6-10z',
+    ro: 'M4 6h16v12H4zM9 6v12M15 6v12',
+    stormwater: 'M6 14a4 4 0 011-7.9A5 5 0 0117 7a3.5 3.5 0 01.5 7M8 18l-1 3M12 18l-1 3M16 18l-1 3',
+    landscape: 'M12 21V10M12 10l4-4-4-1-4 1 4 4zM5 21h14',
+    vacuum: 'M4 8h10a4 4 0 014 4v8M4 8V5m0 3v3M18 20h2M8 12h2',
+    building: 'M4 21h16M6 21V5l6-2 6 2v16M10 9h1M14 9h1M10 13h1M14 13h1',
+    project: 'M4 7h16v13H4zM4 7l2-3h12l2 3M9 12h6',
+    chart: 'M4 20h16M7 16v-5M12 16V7M17 16v-8',
+    check: 'M5 12l5 5 9-10',
+  };
+  function icon(name, size = 22) {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('width', size);
+    svg.setAttribute('height', size);
+    svg.setAttribute('aria-hidden', 'true');
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', ICONS[name] || ICONS.project);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', 'currentColor');
+    path.setAttribute('stroke-width', '1.8');
+    path.setAttribute('stroke-linecap', 'round');
+    path.setAttribute('stroke-linejoin', 'round');
+    svg.append(path);
+    return svg;
+  }
+
+  /* --------------------------------------------------------- field rendering */
+
+  /** Build one input bound to `target[field.name]`. */
+  function renderField(field, target, keyPrefix = '') {
+    const id = `f-${keyPrefix}${field.name}`;
+    const wrap = h('div', { class: 'field', 'data-field': keyPrefix + field.name });
+    const error = h('div', { class: 'field__error' }, `${field.label} is required`);
+
+    const setValue = (value) => {
+      if (isBlank(value) && value !== false) delete target[field.name];
+      else target[field.name] = value;
+      wrap.classList.remove('is-invalid');
+      saveDraft();
+    };
+
+    if (field.type === 'checkbox') {
+      const box = h('button', {
+        type: 'button', class: 'switch__box', role: 'switch', id,
+        'aria-checked': target[field.name] === true ? 'true' : 'false',
+        onclick: () => {
+          const next = box.getAttribute('aria-checked') !== 'true';
+          box.setAttribute('aria-checked', String(next));
+          setValue(next);
+        },
+      });
+      wrap.append(h('div', { class: 'switch' }, h('label', { class: 'switch__label', for: id }, field.label), box));
+      if (field.hint) wrap.append(h('div', { class: 'field__hint' }, field.hint));
+      wrap.append(error);
+      return wrap;
+    }
+
+    wrap.append(h('label', { class: 'field__label', for: id }, field.label, field.required ? h('span', { class: 'field__req' }, ' *') : null));
+
+    if (field.type === 'multiselect') {
+      const selected = new Set(target[field.name] || []);
+      const chips = h('div', { class: 'chips', id });
+      for (const option of field.options) {
+        const chip = h('button', {
+          type: 'button', class: 'chip', 'aria-pressed': selected.has(option) ? 'true' : 'false',
+          onclick: () => {
+            if (selected.has(option)) selected.delete(option); else selected.add(option);
+            chip.setAttribute('aria-pressed', String(selected.has(option)));
+            setValue([...selected]);
+          },
+        }, option);
+        chips.append(chip);
+      }
+      wrap.append(chips);
+    } else if (field.type === 'select') {
+      const select = h('select', { id, onchange: (e) => setValue(e.target.value) },
+        h('option', { value: '' }, 'Select...'),
+        field.options.map((option) => h('option', { value: option, selected: (target[field.name] ?? field.default) === option }, option)));
+      if (target[field.name] === undefined && field.default) target[field.name] = field.default;
+      wrap.append(select);
+    } else if (field.type === 'textarea') {
+      wrap.append(h('textarea', {
+        id, rows: field.rows || 3, placeholder: field.placeholder || '',
+        oninput: (e) => setValue(e.target.value),
+      }, target[field.name] || ''));
+    } else {
+      const input = h('input', {
+        id,
+        type: field.type === 'number' ? 'number' : field.type,
+        inputmode: field.type === 'number' ? 'decimal' : undefined,
+        placeholder: field.placeholder || '',
+        value: target[field.name] ?? '',
+        autocomplete: field.type === 'email' ? 'email' : field.type === 'tel' ? 'tel' : 'off',
+        oninput: (e) => setValue(field.type === 'number' && e.target.value !== '' ? Number(e.target.value) : e.target.value),
+      });
+      wrap.append(input);
+    }
+
+    if (field.hint) wrap.append(h('div', { class: 'field__hint' }, field.hint));
+    wrap.append(error);
+    return wrap;
+  }
+
+  function renderFields(fields, target, prefix = '') {
+    return fields.map((field) => renderField(field, target, prefix));
+  }
+
+  /* ----------------------------------------------------------------- screens */
+
+  function render() {
+    if (screen === 'result') return renderResult();
+    if (screen === 'list') return renderList();
+    renderStep();
+  }
+
+  function renderStep() {
+    const step = STEPS[stepIndex];
+    el.title.textContent = step.title;
+    el.progress.hidden = false;
+    el.navBar.hidden = false;
+    el.back.hidden = stepIndex === 0;
+    el.prev.disabled = stepIndex === 0;
+    el.next.textContent = step.kind === 'send' ? 'Send to engineer' : 'Next';
+    el.next.className = step.kind === 'send' ? 'btn btn--send' : 'btn btn--primary';
+    el.progressFill.style.width = `${((stepIndex + 1) / STEPS.length) * 100}%`;
+    el.progressLabel.textContent = `Step ${stepIndex + 1} of ${STEPS.length} - ${step.title}`;
+
+    const body = h('div', {},
+      h('h1', { class: 'step-title' }, step.title),
+      h('p', { class: 'step-hint' }, step.hint));
+
+    if (step.kind === 'section') {
+      const section = catalog.sections.find((s) => s.id === step.section);
+      body.append(h('div', { class: 'card' },
+        h('div', { class: 'card__title' }, icon(section.icon || 'project', 18), section.title),
+        renderFields(section.fields, state.details)));
+    } else if (step.kind === 'products') {
+      body.append(renderProducts());
+    } else if (step.kind === 'technical') {
+      body.append(renderTechnical());
+    } else if (step.kind === 'attachments') {
+      body.append(renderAttachments());
+    } else if (step.kind === 'send') {
+      body.append(renderSend());
+    }
+
+    el.main.replaceChildren(body);
+    window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+  }
+
+  function renderProducts() {
+    const list = h('div', { class: 'product-list' });
+    for (const product of catalog.products) {
+      const selected = state.products.includes(product.id);
+      const card = h('button', {
+        type: 'button', class: 'product', 'aria-pressed': String(selected),
+        onclick: () => {
+          const index = state.products.indexOf(product.id);
+          if (index >= 0) state.products.splice(index, 1);
+          else state.products.push(product.id);
+          card.setAttribute('aria-pressed', String(state.products.includes(product.id)));
+          saveDraft();
+        },
+      },
+        h('span', { class: 'product__icon' }, icon(product.icon, 24)),
+        h('span', { class: 'product__body' },
+          h('span', { class: 'product__name' }, product.name),
+          h('span', { class: 'product__desc' }, product.description)),
+        h('span', { class: 'product__check' }, icon('check', 14)));
+      list.append(card);
+    }
+    return list;
+  }
+
+  function renderTechnical() {
+    if (state.products.length === 0) {
+      return h('div', { class: 'empty' }, 'No product selected yet. Go back one step and choose what the client needs.');
+    }
+    const wrap = h('div', {});
+    for (const id of state.products) {
+      const product = catalog.products.find((p) => p.id === id);
+      state.productDetails[id] = state.productDetails[id] || {};
+      wrap.append(h('div', { class: 'card' },
+        h('div', { class: 'card__title' }, icon(product.icon, 18), product.name),
+        renderFields(product.fields, state.productDetails[id], `${id}.`)));
+    }
+    return wrap;
+  }
+
+  function renderAttachments() {
+    const wrap = h('div', { class: 'card' });
+    const input = h('input', {
+      type: 'file', multiple: true, id: 'fileInput', style: 'display:none',
+      accept: 'image/*,application/pdf,.doc,.docx,.xls,.xlsx,.dwg,.zip',
+      onchange: (e) => { addFiles(e.target.files); e.target.value = ''; },
+    });
+    const camera = h('input', {
+      type: 'file', accept: 'image/*', capture: 'environment', id: 'cameraInput', style: 'display:none',
+      onchange: (e) => { addFiles(e.target.files); e.target.value = ''; },
+    });
+
+    const listEl = h('ul', { class: 'file-list' });
+    const refreshList = () => {
+      listEl.replaceChildren(...state.files.map((file, index) => {
+        const item = h('li', { class: 'file-item' });
+        if (file.type && file.type.startsWith('image/')) {
+          const img = h('img', { class: 'file-item__thumb', alt: '' });
+          img.src = URL.createObjectURL(file);
+          img.onload = () => URL.revokeObjectURL(img.src);
+          item.append(img);
+        }
+        item.append(
+          h('span', { class: 'file-item__name' }, file.name),
+          h('span', { class: 'file-item__size' }, formatBytes(file.size)),
+          h('button', { class: 'file-item__remove', type: 'button', 'aria-label': `Remove ${file.name}`, onclick: () => { state.files.splice(index, 1); refreshList(); } }, '×'));
+        return item;
+      }));
+    };
+
+    const addFiles = (fileList) => {
+      const limit = catalog.limits.maxUploadMb * 1024 * 1024;
+      for (const file of fileList) {
+        if (state.files.length >= catalog.limits.maxFiles) { toast(`Maximum ${catalog.limits.maxFiles} attachments`); break; }
+        if (file.size > limit) { toast(`${file.name} is larger than ${catalog.limits.maxUploadMb} MB`); continue; }
+        state.files.push(file);
+      }
+      refreshList();
+    };
+
+    const zone = h('div', { class: 'dropzone' },
+      h('p', { style: 'margin:0 0 12px' }, 'Photos of the site, drawings, tender documents or the client water analysis.'),
+      h('button', { class: 'btn btn--outline btn--block', type: 'button', onclick: () => camera.click() }, 'Take a photo'),
+      h('button', { class: 'btn btn--outline btn--block', type: 'button', onclick: () => input.click() }, 'Choose files'));
+
+    wrap.append(input, camera, zone, listEl,
+      h('div', { class: 'field__hint', style: 'margin-top:10px' }, `Up to ${catalog.limits.maxFiles} files, ${catalog.limits.maxUploadMb} MB each. Attachments are e-mailed with the opportunity.`));
+    refreshList();
+    return wrap;
+  }
+
+  function renderSend() {
+    const wrap = h('div', {});
+
+    // Sales rep block
+    wrap.append(h('div', { class: 'card' },
+      h('div', { class: 'card__title' }, icon('chart', 18), catalog.submission.title),
+      renderFields(catalog.submission.fields, state.details)));
+
+    // Recipients
+    const recipientCard = h('div', { class: 'card' }, h('div', { class: 'card__title' }, icon('project', 18), 'Send to'));
+    if (state.recipients.length === 0) {
+      const suggested = catalog.recipients
+        .filter((r) => r.default || (r.products || []).some((p) => state.products.includes(p)))
+        .map((r) => r.email);
+      state.recipients = [...new Set(suggested)];
+    }
+    const chips = h('div', { class: 'chips' });
+    for (const person of catalog.recipients) {
+      const chip = h('button', {
+        type: 'button', class: 'chip', 'aria-pressed': String(state.recipients.includes(person.email)),
+        onclick: () => {
+          const index = state.recipients.indexOf(person.email);
+          if (index >= 0) state.recipients.splice(index, 1); else state.recipients.push(person.email);
+          chip.setAttribute('aria-pressed', String(state.recipients.includes(person.email)));
+          saveDraft();
+        },
+      }, person.name);
+      chips.append(chip);
+    }
+    recipientCard.append(chips,
+      h('div', { class: 'field', style: 'margin-top:14px' },
+        h('label', { class: 'field__label', for: 'extraEmail' }, 'Additional e-mail address'),
+        h('input', { type: 'email', id: 'extraEmail', placeholder: 'name@watersecret.com.sa', value: state.cc.join(', '), oninput: (e) => { state.cc = e.target.value.split(/[,;]/).map((s) => s.trim()).filter(Boolean); saveDraft(); } })),
+      h('div', { class: 'field' },
+        h('label', { class: 'field__label', for: 'message' }, 'Message to the engineering team'),
+        h('textarea', { id: 'message', rows: 3, placeholder: 'Anything the engineer should know before preparing the offer', oninput: (e) => { state.message = e.target.value; saveDraft(); } }, state.message)));
+    wrap.append(recipientCard);
+
+    // Review
+    const review = h('div', { class: 'card' }, h('div', { class: 'card__title' }, icon('check', 18), 'Summary'));
+    catalog.sections.forEach((section, index) => {
+      const rows = section.fields.filter((f) => !isBlank(state.details[f.name]) || state.details[f.name] === false);
+      if (!rows.length) return;
+      review.append(h('div', { class: 'review-group' },
+        h('div', { class: 'review-group__title' }, section.title,
+          h('button', { class: 'review-group__edit', type: 'button', onclick: () => goTo(index) }, 'Edit')),
+        rows.map((f) => h('div', { class: 'review-row' },
+          h('div', { class: 'review-row__label' }, f.label),
+          h('div', { class: 'review-row__value' }, displayValue(f, state.details[f.name]))))));
+    });
+    for (const id of state.products) {
+      const product = catalog.products.find((p) => p.id === id);
+      const values = state.productDetails[id] || {};
+      const rows = product.fields.filter((f) => !isBlank(values[f.name]) || values[f.name] === false);
+      review.append(h('div', { class: 'review-group' },
+        h('div', { class: 'review-group__title' }, product.name,
+          h('button', { class: 'review-group__edit', type: 'button', onclick: () => goTo(4) }, 'Edit')),
+        rows.length
+          ? rows.map((f) => h('div', { class: 'review-row' },
+              h('div', { class: 'review-row__label' }, f.label),
+              h('div', { class: 'review-row__value' }, displayValue(f, values[f.name]))))
+          : h('div', { class: 'summary-line' }, 'No technical details filled in.')));
+    }
+    review.append(h('div', { class: 'review-group' },
+      h('div', { class: 'review-group__title' }, 'Attachments',
+        h('button', { class: 'review-group__edit', type: 'button', onclick: () => goTo(5) }, 'Edit')),
+      state.files.length
+        ? state.files.map((f) => h('div', { class: 'review-row' },
+            h('div', { class: 'review-row__label' }, f.name),
+            h('div', { class: 'review-row__value' }, formatBytes(f.size))))
+        : h('div', { class: 'summary-line' }, 'No attachments.')));
+    wrap.append(review);
+
+    return wrap;
+  }
+
+  function renderResult() {
+    el.progress.hidden = true;
+    el.navBar.hidden = true;
+    el.back.hidden = true;
+    el.title.textContent = 'Opportunity registered';
+
+    const queued = lastResult.emailStatus === 'queued';
+    const failed = lastResult.emailStatus === 'failed' || lastResult.emailStatus === 'not_configured';
+    const wrap = h('div', { class: 'result' },
+      h('div', { class: `result__icon${queued || failed ? ' result__icon--warn' : ''}` }, icon('check', 40)),
+      h('h1', { style: 'margin:0;font-size:20px' }, queued ? 'Saved on your phone' : 'Registered'),
+      h('div', { class: 'result__ref' }, lastResult.reference || 'Pending reference'),
+      h('p', { class: 'result__note' }, lastResult.message));
+
+    if (lastResult.sentTo && lastResult.sentTo.length) {
+      const prefix = lastResult.emailStatus === 'sent' ? 'Sent to' : 'To be sent to';
+      wrap.append(h('p', { class: 'summary-line' }, `${prefix}: ${lastResult.sentTo.join(', ')}`));
+    }
+
+    if (failed || queued) {
+      wrap.append(h('button', { class: 'btn btn--send btn--block', type: 'button', onclick: () => sendFromMailApp() }, 'Send from my mail app'));
+      if (lastResult.reference) {
+        wrap.append(h('button', { class: 'btn btn--outline btn--block', type: 'button', onclick: (e) => retrySend(e.target) }, 'Try sending again'));
+      }
+    }
+    if (canShare()) {
+      wrap.append(h('button', { class: 'btn btn--outline btn--block', type: 'button', onclick: () => shareSummary() }, 'Share (WhatsApp, Teams...)'));
+    }
+    wrap.append(
+      h('button', { class: 'btn btn--primary btn--block', type: 'button', onclick: () => startNew() }, 'Register another opportunity'),
+      h('button', { class: 'btn btn--link btn--block', type: 'button', onclick: () => showList() }, 'View my registrations'));
+
+    el.main.replaceChildren(wrap);
+    window.scrollTo(0, 0);
+  }
+
+  async function renderList() {
+    el.progress.hidden = true;
+    el.navBar.hidden = true;
+    el.back.hidden = false;
+    el.title.textContent = 'Registrations';
+    el.main.replaceChildren(h('div', { class: 'empty' }, h('span', { class: 'spinner spinner--brand' })));
+
+    try {
+      const response = await apiFetch(API.opportunities);
+      const { opportunities } = await response.json();
+      const pending = await outbox.all();
+      const wrap = h('div', {});
+
+      if (pending.length) {
+        wrap.append(h('div', { class: 'card' },
+          h('div', { class: 'card__title' }, 'Waiting to be sent'),
+          pending.map((item) => h('div', { class: 'record' },
+            h('div', { class: 'record__project' }, item.payload.details.projectName || 'Untitled project'),
+            h('div', { class: 'record__client' }, item.payload.details.clientCompany || ''),
+            h('span', { class: 'tag tag--pending' }, 'Queued on this phone'))),
+          h('button', { class: 'btn btn--outline btn--block', type: 'button', onclick: () => flushOutbox(true) }, 'Send now')));
+      }
+
+      if (!opportunities.length && !pending.length) {
+        wrap.append(h('div', { class: 'empty' }, 'No opportunities registered yet.'));
+      }
+
+      for (const record of opportunities) {
+        const statusClass = record.emailStatus === 'sent' ? 'tag--sent' : record.emailStatus === 'failed' ? 'tag--failed' : 'tag--pending';
+        wrap.append(h('div', { class: 'record' },
+          h('div', { class: 'record__top' },
+            h('span', { class: 'record__ref' }, record.reference),
+            h('span', {}, formatDate((record.createdAt || '').slice(0, 10)))),
+          h('div', { class: 'record__project' }, record.projectName || 'Untitled project'),
+          h('div', { class: 'record__client' }, `${record.clientCompany} · ${record.salesName}`),
+          h('div', {},
+            record.products.map((id) => h('span', { class: 'tag' }, (catalog.products.find((p) => p.id === id) || {}).short || id)),
+            h('span', { class: `tag ${statusClass}` }, record.emailStatus === 'sent' ? 'E-mailed' : record.emailStatus === 'failed' ? 'E-mail failed' : 'Not e-mailed'),
+            record.attachments ? h('span', { class: 'tag' }, `${record.attachments} file(s)`) : null)));
+      }
+      el.main.replaceChildren(wrap);
+    } catch (error) {
+      el.main.replaceChildren(h('div', { class: 'empty' }, 'Cannot load the registrations while you are offline.'));
+    }
+  }
+
+  /* -------------------------------------------------------------- navigation */
+
+  function goTo(index) {
+    stepIndex = Math.max(0, Math.min(STEPS.length - 1, index));
+    screen = 'wizard';
+    render();
+  }
+
+  function validateStep() {
+    const step = STEPS[stepIndex];
+    let firstInvalid = null;
+
+    const check = (fields, target, prefix = '') => {
+      for (const field of fields) {
+        if (!field.required) continue;
+        const value = target[field.name];
+        if (isBlank(value) && value !== false) {
+          const node = el.main.querySelector(`[data-field="${prefix}${field.name}"]`);
+          if (node) { node.classList.add('is-invalid'); firstInvalid = firstInvalid || node; }
+        }
+      }
+    };
+
+    if (step.kind === 'section') {
+      check(catalog.sections.find((s) => s.id === step.section).fields, state.details);
+    } else if (step.kind === 'products') {
+      if (state.products.length === 0) { toast('Select at least one product'); return false; }
+    } else if (step.kind === 'technical') {
+      for (const id of state.products) {
+        const product = catalog.products.find((p) => p.id === id);
+        check(product.fields, state.productDetails[id] || {}, `${id}.`);
+      }
+    } else if (step.kind === 'send') {
+      check(catalog.submission.fields, state.details);
+      if (state.recipients.length === 0) { toast('Select who should receive this opportunity'); return false; }
+    }
+
+    if (firstInvalid) {
+      firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      toast('Please fill in the highlighted fields');
+      return false;
+    }
+    return true;
+  }
+
+  el.next.addEventListener('click', () => {
+    if (!validateStep()) return;
+    if (STEPS[stepIndex].kind === 'send') submit();
+    else goTo(stepIndex + 1);
+  });
+  el.prev.addEventListener('click', () => goTo(stepIndex - 1));
+  el.back.addEventListener('click', () => {
+    if (screen !== 'wizard') { screen = 'wizard'; render(); }
+    else goTo(stepIndex - 1);
+  });
+  el.list.addEventListener('click', () => showList());
+
+  function showList() { screen = 'list'; render(); }
+
+  function startNew() {
+    const rep = {};
+    for (const field of catalog.submission.fields) {
+      if (field.remember && state.details[field.name]) rep[field.name] = state.details[field.name];
+    }
+    localStorage.setItem(REP_KEY, JSON.stringify(rep));
+    state = emptyState();
+    Object.assign(state.details, rep);
+    localStorage.removeItem(DRAFT_KEY);
+    lastResult = null;
+    stepIndex = 0;
+    screen = 'wizard';
+    render();
+  }
+
+  /* ------------------------------------------------------------ draft saving */
+
+  function saveDraft() {
+    clearTimeout(saveDraft._t);
+    saveDraft._t = setTimeout(() => {
+      try {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify({
+          details: state.details, products: state.products, productDetails: state.productDetails,
+          recipients: state.recipients, cc: state.cc, message: state.message, savedAt: Date.now(),
+        }));
+      } catch { /* storage full or private mode - the form still works */ }
+    }, 250);
+  }
+
+  function loadDraft() {
+    try { return JSON.parse(localStorage.getItem(DRAFT_KEY)); } catch { return null; }
+  }
+
+  /* --------------------------------------------------- offline outbox (IDB) */
+
+  const outbox = {
+    db: null,
+    open() {
+      if (this.db) return Promise.resolve(this.db);
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open('wsc-sales', 1);
+        request.onupgradeneeded = () => request.result.createObjectStore('outbox', { keyPath: 'id', autoIncrement: true });
+        request.onsuccess = () => { this.db = request.result; resolve(this.db); };
+        request.onerror = () => reject(request.error);
+      });
+    },
+    async tx(mode, run) {
+      const db = await this.open();
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction('outbox', mode);
+        const result = run(transaction.objectStore('outbox'));
+        transaction.oncomplete = () => resolve(result.result !== undefined ? result.result : result);
+        transaction.onerror = () => reject(transaction.error);
+      });
+    },
+    add(item) { return this.tx('readwrite', (store) => store.add(item)); },
+    remove(id) { return this.tx('readwrite', (store) => store.delete(id)); },
+    all() { return this.tx('readonly', (store) => store.getAll()).catch(() => []); },
+  };
+
+  /* ------------------------------------------------------------- submission */
+
+  function newClientId() {
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return `id-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  }
+
+  function buildPayload() {
+    return {
+      clientId: state.clientId || (state.clientId = newClientId()),
+      details: state.details,
+      products: state.products,
+      productDetails: state.productDetails,
+      recipients: state.recipients,
+      cc: state.cc,
+      message: state.message,
+    };
+  }
+
+  function apiFetch(url, options = {}) {
+    const code = localStorage.getItem(CODE_KEY);
+    const headers = { ...(options.headers || {}) };
+    if (code) headers['x-access-code'] = code;
+    return fetch(url, { ...options, headers });
+  }
+
+  async function submit() {
+    if (submitting) return;
+    submitting = true;
+    el.next.disabled = true;
+    el.next.replaceChildren(h('span', { class: 'spinner' }), document.createTextNode(' Sending...'));
+
+    const payload = buildPayload();
+    const form = new FormData();
+    form.append('payload', JSON.stringify(payload));
+    for (const file of state.files) form.append('attachments', file, file.name);
+
+    try {
+      const response = await apiFetch(API.opportunities, { method: 'POST', body: form });
+
+      if (response.status === 401) {
+        submitting = false;
+        el.next.disabled = false;
+        el.next.textContent = 'Send to engineer';
+        return askAccessCode(() => submit());
+      }
+
+      const result = await response.json();
+      if (!response.ok && response.status !== 207) {
+        toast(result.error || 'Could not register the opportunity');
+        if (result.errors) markServerErrors(result.errors);
+        return;
+      }
+
+      lastResult = result;
+      localStorage.removeItem(DRAFT_KEY);
+      screen = 'result';
+      render();
+    } catch (error) {
+      // No signal on site: keep everything, including the photos, and retry later.
+      await outbox.add({ payload, files: state.files, createdAt: new Date().toISOString() });
+      lastResult = {
+        reference: '',
+        emailStatus: 'queued',
+        message: 'No internet connection. The opportunity is saved on your phone and will be sent automatically as soon as you have signal.',
+      };
+      localStorage.removeItem(DRAFT_KEY);
+      screen = 'result';
+      render();
+    } finally {
+      submitting = false;
+      el.next.disabled = false;
+      el.next.textContent = 'Send to engineer';
+    }
+  }
+
+  function markServerErrors(errors) {
+    let first = null;
+    for (const item of errors) {
+      const node = el.main.querySelector(`[data-field="${item.field}"]`);
+      if (node) { node.classList.add('is-invalid'); first = first || node; }
+    }
+    if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  async function retrySend(button) {
+    button.disabled = true;
+    try {
+      const response = await apiFetch(`${API.opportunities}/${lastResult.reference}/resend`, { method: 'POST' });
+      const result = await response.json();
+      if (result.emailStatus === 'sent') {
+        lastResult.emailStatus = 'sent';
+        lastResult.message = 'Opportunity e-mailed to the engineering team.';
+        render();
+        toast('E-mail sent');
+      } else {
+        toast(result.error || 'Still could not send the e-mail');
+      }
+    } catch {
+      toast('No connection');
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  /** Flush anything that was registered while the phone had no signal.
+   *  Guarded: the boot flush and the "online" event can fire together. */
+  let flushing = false;
+  async function flushOutbox(manual = false) {
+    if (flushing) { if (manual) toast('Sending...'); return; }
+    flushing = true;
+    try {
+      await flushOutboxOnce(manual);
+    } finally {
+      flushing = false;
+    }
+  }
+
+  async function flushOutboxOnce(manual) {
+    let items = [];
+    try { items = await outbox.all(); } catch { return; }
+    if (!items.length) { if (manual) toast('Nothing waiting to be sent'); return; }
+    let sent = 0;
+    for (const item of items) {
+      const form = new FormData();
+      form.append('payload', JSON.stringify(item.payload));
+      for (const file of item.files || []) form.append('attachments', file, file.name);
+      try {
+        const response = await apiFetch(API.opportunities, { method: 'POST', body: form });
+        if (response.ok || response.status === 207) { await outbox.remove(item.id); sent += 1; }
+      } catch { break; }
+    }
+    if (sent) {
+      toast(`${sent} saved opportunit${sent === 1 ? 'y' : 'ies'} sent to the office`);
+      if (screen === 'list') render();
+    } else if (manual) {
+      toast('Still no connection');
+    }
+  }
+
+  /* ------------------------------------------- fallbacks: mail app & sharing */
+
+  function summaryText(payload = buildPayload()) {
+    const lines = [];
+    lines.push(`${catalog.company.name} - new sales opportunity`);
+    if (lastResult && lastResult.reference) lines.push(`Reference: ${lastResult.reference}`);
+    lines.push('');
+    lines.push(`Products: ${payload.products.map((id) => (catalog.products.find((p) => p.id === id) || {}).name || id).join(', ')}`);
+    lines.push('');
+    for (const section of [...catalog.sections, catalog.submission]) {
+      const rows = section.fields.filter((f) => !isBlank(payload.details[f.name]) || payload.details[f.name] === false);
+      if (!rows.length) continue;
+      lines.push(`== ${section.title} ==`);
+      for (const field of rows) lines.push(`  ${field.label}: ${displayValue(field, payload.details[field.name])}`);
+      lines.push('');
+    }
+    for (const id of payload.products) {
+      const product = catalog.products.find((p) => p.id === id);
+      const values = payload.productDetails[id] || {};
+      lines.push(`== ${product.name} ==`);
+      for (const field of product.fields) {
+        if (isBlank(values[field.name]) && values[field.name] !== false) continue;
+        lines.push(`  ${field.label}: ${displayValue(field, values[field.name])}`);
+      }
+      lines.push('');
+    }
+    if (payload.message) { lines.push('== Message =='); lines.push(`  ${payload.message}`); lines.push(''); }
+    if (state.files.length) lines.push(`Attachments to follow: ${state.files.map((f) => f.name).join(', ')}`);
+    return lines.join('\n');
+  }
+
+  function mailSubject() {
+    const products = state.products.map((id) => (catalog.products.find((p) => p.id === id) || {}).short || id).join(' + ');
+    const reference = lastResult && lastResult.reference ? `[${lastResult.reference}] ` : '';
+    return `${reference}${products} - ${state.details.projectName || 'New opportunity'} (${state.details.clientCompany || ''})`;
+  }
+
+  function sendFromMailApp() {
+    const to = (lastResult.sentTo || state.recipients).join(',');
+    const url = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(mailSubject())}&body=${encodeURIComponent(summaryText())}`;
+    window.location.href = url;
+  }
+
+  function canShare() {
+    return typeof navigator.share === 'function';
+  }
+
+  async function shareSummary() {
+    const data = { title: mailSubject(), text: summaryText() };
+    try {
+      if (state.files.length && navigator.canShare && navigator.canShare({ files: state.files })) data.files = state.files;
+      await navigator.share(data);
+    } catch { /* the user cancelled the share sheet */ }
+  }
+
+  /* ------------------------------------------------------------ access code */
+
+  function askAccessCode(then) {
+    const input = h('input', { type: 'text', inputmode: 'numeric', placeholder: 'Team access code', id: 'accessCode' });
+    const body = h('div', {},
+      h('p', { class: 'summary-line', style: 'margin-top:0' }, 'Enter the code given by the office to use the app on this phone.'),
+      h('div', { class: 'field' }, input),
+      h('button', {
+        class: 'btn btn--primary btn--block', type: 'button',
+        onclick: () => { localStorage.setItem(CODE_KEY, input.value.trim()); closeSheet(); then(); },
+      }, 'Continue'));
+    openSheet('Access code', body);
+    setTimeout(() => input.focus(), 120);
+  }
+
+  /* ------------------------------------------------------------------- boot */
+
+  function updateOnlineBanner() {
+    el.offline.hidden = navigator.onLine;
+  }
+  window.addEventListener('online', () => { updateOnlineBanner(); flushOutbox(); });
+  window.addEventListener('offline', updateOnlineBanner);
+
+  async function boot() {
+    updateOnlineBanner();
+    el.main.replaceChildren(h('div', { class: 'empty' }, h('span', { class: 'spinner spinner--brand' })));
+    try {
+      const response = await apiFetch(API.catalog);
+      catalog = await response.json();
+      localStorage.setItem('wsc.catalog.v1', JSON.stringify(catalog));
+    } catch {
+      try { catalog = JSON.parse(localStorage.getItem('wsc.catalog.v1')); } catch { catalog = null; }
+      if (!catalog) {
+        el.main.replaceChildren(h('div', { class: 'empty' }, 'Cannot reach the server. Connect once while online to load the form.'));
+        return;
+      }
+      toast('Working offline with the saved form');
+    }
+
+    try { Object.assign(state.details, JSON.parse(localStorage.getItem(REP_KEY)) || {}); } catch { /* no saved rep yet */ }
+
+    const draft = loadDraft();
+    if (draft && (draft.details?.clientCompany || draft.products?.length)) {
+      render();
+      openSheet('Continue where you stopped?', h('div', {},
+        h('p', { class: 'summary-line', style: 'margin-top:0' },
+          `You have an unfinished registration${draft.details?.clientCompany ? ` for ${draft.details.clientCompany}` : ''}.`),
+        h('button', {
+          class: 'btn btn--primary btn--block', type: 'button',
+          onclick: () => {
+            state = { ...emptyState(), ...draft, files: [] };
+            closeSheet();
+            render();
+          },
+        }, 'Continue'),
+        h('button', {
+          class: 'btn btn--ghost btn--block', type: 'button', style: 'flex:1',
+          onclick: () => { localStorage.removeItem(DRAFT_KEY); closeSheet(); startNew(); },
+        }, 'Start a new one')));
+    } else {
+      render();
+    }
+
+    flushOutbox();
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(() => { /* offline shell is optional */ });
+    }
+  }
+
+  boot();
+})();
+</script>

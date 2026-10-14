@@ -1,0 +1,9 @@
+[
+  { "name": "Engineering Department", "email": "engineering@watersecret.com.sa", "default": true, "products": [] },
+  { "name": "Proposals / Estimation", "email": "proposals@watersecret.com.sa", "default": true, "products": [] },
+  { "name": "STP & Greywater Engineer", "email": "stp.engineer@watersecret.com.sa", "products": ["stp", "greywater"] },
+  { "name": "RO & Water Treatment Engineer", "email": "ro.engineer@watersecret.com.sa", "products": ["ro"] },
+  { "name": "Infrastructure Engineer", "email": "infra.engineer@watersecret.com.sa", "products": ["stormwater", "vacuum"] },
+  { "name": "Landscape Engineer", "email": "landscape@watersecret.com.sa", "products": ["landscape"] },
+  { "name": "Sales Manager", "email": "sales.manager@watersecret.com.sa" }
+]

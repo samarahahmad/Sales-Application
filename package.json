@@ -1,0 +1,22 @@
+{
+  "name": "water-secret-sales-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Internal sales opportunity registration app for Water Secret Contracting",
+  "main": "server/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "test": "node --test test/*.test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.14"
+  }
+}
